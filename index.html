@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shop Services LLC — Command Center</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+:root {
+  color-scheme: light;
+  --brand: #1a1a2e;
+  --accent: #e94560;
+  --accent2: #0f3460;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --bg: #f8f9fc;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --muted: #6b7280;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* HEADER */
+.header {
+  background: var(--brand);
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; letter-spacing: -1px;
+}
+.brand-name { font-weight: 700; font-size: 15px; }
+.brand-sub { font-size: 11px; opacity: 0.6; margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.clock { font-size: 12px; opacity: 0.7; text-align: right; }
+.refresh-btn {
+  background: rgba(255,255,255,0.12);
+  border: none; color: white;
+  border-radius: 8px; padding: 6px 10px;
+  cursor: pointer; font-size: 18px;
+  transition: background 0.2s;
+}
+.refresh-btn:hover { background: rgba(255,255,255,0.2); }
+.refresh-btn.spinning { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* STATS BAR */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 16px 20px 0;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  border-left: 3px solid var(--border);
+}
+.stat-card.green { border-left-color: var(--green); }
+.stat-card.blue { border-left-color: var(--blue); }
+.stat-card.yellow { border-left-color: var(--yellow); }
+.stat-card.red { border-left-color: var(--red); }
+.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-value { font-size: 24px; font-weight: 700; margin-top: 4px; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* MAIN GRID */
+.main { padding: 16px 20px 100px; display: grid; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.card-icon { font-size: 16px; }
+.card-action {
+  font-size: 11px; color: var(--blue);
+  cursor: pointer; background: none; border: none;
+  padding: 4px 8px; border-radius: 6px;
+  transition: background 0.2s;
+}
+.card-action:hover { background: #eff6ff; }
+.card-body { padding: 16px 18px; }
+
+/* ORDERS */
+.order-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.order-item:last-child { border-bottom: none; }
+.order-num { font-weight: 700; color: var(--accent2); font-size: 13px; min-width: 50px; }
+.order-info { flex: 1; }
+.order-name { font-size: 13px; font-weight: 500; }
+.order-date { font-size: 11px; color: var(--muted); }
+.order-price { font-weight: 700; font-size: 14px; }
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.badge-green { background: #d1fae5; color: #065f46; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+.badge-blue { background: #dbeafe; color: #1e40af; }
+
+/* EMAIL */
+.email-item {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  margin: 0 -18px; padding: 10px 18px;
+}
+.email-item:last-child { border-bottom: none; }
+.email-item:hover { background: #f9fafb; }
+.email-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent2);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 13px;
+  flex-shrink: 0;
+}
+.email-content { flex: 1; min-width: 0; }
+.email-sender { font-weight: 600; font-size: 12px; }
+.email-subject { font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.email-snippet { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.email-meta { text-align: right; flex-shrink: 0; }
+.email-date { font-size: 10px; color: var(--muted); }
+.unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); margin: 4px auto 0; }
+
+/* TASKS */
+.task-form { display: flex; gap: 8px; margin-bottom: 14px; }
+.task-input {
+  flex: 1; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; outline: none;
+  transition: border-color 0.2s;
+}
+.task-input:focus { border-color: var(--blue); }
+.task-priority {
+  padding: 8px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 12px; outline: none;
+  background: white;
+}
+.btn-add {
+  padding: 8px 14px; background: var(--accent2);
+  color: white; border: none; border-radius: 8px;
+  cursor: pointer; font-size: 13px; font-weight: 600;
+  white-space: nowrap;
+}
+.btn-add:hover { opacity: 0.9; }
+.task-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.task-item:last-child { border-bottom: none; }
+.task-check {
+  width: 18px; height: 18px; border-radius: 5px;
+  border: 2px solid var(--border); cursor: pointer;
+  flex-shrink: 0; appearance: none; background: white;
+  transition: all 0.2s;
+}
+.task-check:checked { background: var(--green); border-color: var(--green); }
+.task-text { flex: 1; font-size: 13px; }
+.task-text.done { text-decoration: line-through; color: var(--muted); }
+.task-del {
+  color: var(--muted); background: none; border: none;
+  cursor: pointer; font-size: 16px; opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.task-del:hover { opacity: 1; color: var(--red); }
+.priority-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.p-high { background: var(--red); }
+.p-medium { background: var(--yellow); }
+.p-low { background: var(--green); }
+
+/* PAYMENTS */
+.payment-form { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; margin-bottom: 14px; }
+.pay-input {
+  padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 12px; outline: none;
+}
+.pay-input:focus { border-color: var(--blue); }
+.payment-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.payment-item:last-child { border-bottom: none; }
+.pay-info { flex: 1; }
+.pay-name { font-size: 13px; font-weight: 500; }
+.pay-date { font-size: 11px; color: var(--muted); }
+.pay-amount { font-weight: 700; font-size: 14px; color: var(--accent2); }
+.pay-status { font-size: 10px; }
+.days-left { font-size: 10px; }
+.days-red { color: var(--red); font-weight: 700; }
+.days-yellow { color: var(--yellow); font-weight: 700; }
+.days-green { color: var(--green); }
+
+/* TAX TRACKER */
+.tax-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.tax-item {
+  background: var(--bg); border-radius: 8px;
+  padding: 12px; border: 1px solid var(--border);
+}
+.tax-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.tax-val { font-size: 18px; font-weight: 700; }
+.tax-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tax-checklist { }
+.tax-check-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
+.tax-check-item:last-child { border-bottom: none; }
+
+/* CLAUDE CHAT */
+.claude-panel { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; }
+.claude-bar {
+  background: var(--brand);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.claude-input {
+  flex: 1; padding: 10px 14px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 24px; color: white; font-size: 14px; outline: none;
+}
+.claude-input::placeholder { color: rgba(255,255,255,0.5); }
+.claude-input:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.18); }
+.claude-send {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--accent); border: none; cursor: pointer;
+  color: white; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.2s;
+}
+.claude-send:hover { opacity: 0.85; }
+.voice-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.voice-btn.listening { background: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+
+/* LOADING */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px; height: 14px; margin: 8px 0;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* REVENUE CHART */
+.chart-wrap { position: relative; height: 140px; }
+
+/* MOBILE */
+@media (max-width: 640px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .payment-form { grid-template-columns: 1fr 1fr; }
+  .stat-value { font-size: 20px; }
+}
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; }
+.empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+/* SECTION DIVIDER */
+.section-title {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 4px 0 8px;
+}
+
+/* LOAN TRACKER */
+.loan-progress-bar { background: #e5e7eb; border-radius: 99px; height: 10px; margin: 8px 0 4px; overflow: hidden; }
+.loan-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #10b981, #3b82f6); transition: width 0.5s; }
+.milestone-row { display: flex; gap: 10px; margin-top: 12px; }
+.milestone { flex: 1; background: var(--bg); border-radius: 8px; padding: 10px; border: 1px solid var(--border); text-align: center; }
+.milestone.done { border-color: var(--green); background: #f0fdf4; }
+.milestone.urgent { border-color: var(--red); background: #fff5f5; }
+.milestone-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.milestone-val { font-size: 13px; font-weight: 700; margin: 2px 0; }
+.milestone-date { font-size: 10px; color: var(--muted); }
+.loan-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 12px; }
+.loan-stat { background: var(--bg); border-radius: 8px; padding: 10px; border: 1px solid var(--border); }
+.loan-stat-label { font-size: 10px; color: var(--muted); }
+.loan-stat-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+
+/* FILE UPLOAD */
+.file-drop {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 20px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 12px;
+}
+.file-drop:hover, .file-drop.drag { border-color: var(--blue); background: #eff6ff; }
+.file-drop-icon { font-size: 28px; margin-bottom: 6px; }
+.file-drop-text { font-size: 12px; color: var(--muted); }
+.file-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; background: var(--bg);
+  border-radius: 8px; margin-bottom: 6px;
+  border: 1px solid var(--border);
+}
+.file-icon { font-size: 20px; }
+.file-info { flex: 1; min-width: 0; }
+.file-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-meta { font-size: 10px; color: var(--muted); }
+.file-del { color: var(--muted); background: none; border: none; cursor: pointer; font-size: 16px; }
+.file-del:hover { color: var(--red); }
+
+/* REVENUE RING */
+.revenue-ring { display: flex; align-items: center; gap: 20px; }
+.ring-stats { flex: 1; }
+.ring-stat { margin-bottom: 10px; }
+.ring-label { font-size: 11px; color: var(--muted); }
+.ring-val { font-size: 20px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">SS</div>
+    <div>
+      <div class="brand-name">Shop Services LLC</div>
+      <div class="brand-sub">Agency Command Center</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="clock" id="clock"></div>
+    <button class="refresh-btn" id="refreshBtn" title="Actualizar datos" onclick="loadAll()">⟳</button>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-card green">
+    <div class="stat-label">Ingresos (7 días)</div>
+    <div class="stat-value" id="stat-revenue">—</div>
+    <div class="stat-sub" id="stat-orders">cargando...</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-label">Emails sin leer</div>
+    <div class="stat-value" id="stat-unread">—</div>
+    <div class="stat-sub">en bandeja de entrada</div>
+  </div>
+  <div class="stat-card yellow">
+    <div class="stat-label">Tareas pendientes</div>
+    <div class="stat-value" id="stat-tasks">—</div>
+    <div class="stat-sub">en tu lista</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-label">Pagos próximos</div>
+    <div class="stat-value" id="stat-payments">—</div>
+    <div class="stat-sub">en los próximos 7 días</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ROW 1: Shopify + Email -->
+  <div class="grid-2">
+
+    <!-- SHOPIFY ORDERS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">🛍️</span> Órdenes Recientes — HomeMaster</div>
+        <button class="card-action" onclick="loadOrders()">Ver más</button>
+      </div>
+      <div class="card-body" id="orders-body">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">📧</span> Inbox — agencia@shopservicesllc.com</div>
+        <button class="card-action" onclick="loadEmails()">Actualizar</button>
+      </div>
+      <div class="card-body" id="emails-body">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Tasks + Payments + Tax -->
+  <div class="grid-3">
+
+    <!-- TASKS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">✅</span> Tareas & Recordatorios</div>
+        <span class="badge badge-blue" id="task-count-badge">0</span>
+      </div>
+      <div class="card-body">
+        <div class="task-form">
+          <input class="task-input" id="task-input" placeholder="Nueva tarea..." onkeydown="if(event.key==='Enter')addTask()"/>
+          <select class="task-priority" id="task-priority">
+            <option value="high">🔴 Alta</option>
+            <option value="medium" selected>🟡 Media</option>
+            <option value="low">🟢 Baja</option>
+          </select>
+          <button class="btn-add" onclick="addTask()">+</button>
+        </div>
+        <div id="tasks-list"></div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">💳</span> Pagos Próximos</div>
+        <button class="card-action" onclick="togglePayForm()">+ Agregar</button>
+      </div>
+      <div class="card-body">
+        <div id="pay-form" style="display:none; margin-bottom:14px;">
+          <div style="display:grid; gap:6px;">
+            <input class="pay-input" id="pay-name" placeholder="Ej: Stripe, Google Ads..." style="width:100%"/>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <input class="pay-input" id="pay-amount" type="number" placeholder="Monto $"/>
+              <input class="pay-input" id="pay-date" type="date"/>
+            </div>
+            <button class="btn-add" onclick="addPayment()" style="width:100%;">Agregar pago</button>
+          </div>
+        </div>
+        <div id="payments-list"></div>
+      </div>
+    </div>
+
+    <!-- TAX PREP -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">🧾</span> Preparación de Impuestos</div>
+        <span id="tax-year" class="badge badge-blue">2026</span>
+      </div>
+      <div class="card-body">
+        <div class="tax-grid">
+          <div class="tax-item">
+            <div class="tax-label">Ingresos est.</div>
+            <div class="tax-val" id="tax-income">$0</div>
+            <div class="tax-note">Ingresado manualmente</div>
+          </div>
+          <div class="tax-item">
+            <div class="tax-label">Gastos est.</div>
+            <div class="tax-val" id="tax-expenses">$0</div>
+            <div class="tax-note">Gastos deducibles</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+          <input class="pay-input" id="tax-inc-input" type="number" placeholder="Ingresos $" style="flex:1"/>
+          <input class="pay-input" id="tax-exp-input" type="number" placeholder="Gastos $" style="flex:1"/>
+          <button class="btn-add" onclick="saveTax()">💾</button>
+        </div>
+        <div class="section-title">Checklist</div>
+        <div class="tax-checklist" id="tax-checklist"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2B: Shopify Loan + Documents -->
+  <div class="grid-2">
+
+    <!-- SHOPIFY LOAN TRACKER -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">🏦</span> Préstamo Shopify Capital — WebBank</div>
+        <span class="badge badge-blue">Activo</span>
+      </div>
+      <div class="card-body">
+        <div class="loan-grid">
+          <div class="loan-stat">
+            <div class="loan-stat-label">Préstamo recibido</div>
+            <div class="loan-stat-val" style="color:var(--green)">$950.00</div>
+          </div>
+          <div class="loan-stat">
+            <div class="loan-stat-label">Total a pagar</div>
+            <div class="loan-stat-val">$1,069.70</div>
+          </div>
+          <div class="loan-stat">
+            <div class="loan-stat-label">Costo financiero</div>
+            <div class="loan-stat-val" style="color:var(--red)">$119.70</div>
+          </div>
+        </div>
+        <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">
+          📅 Firmado: 2 junio 2026 &nbsp;·&nbsp; 🔄 17% de ventas diarias (≈$3.55/día) &nbsp;·&nbsp; ⏱️ Máx. 18 meses
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:2px;">
+          <span>Pagado hasta ahora</span>
+          <span id="loan-paid-pct">0%</span>
+        </div>
+        <div class="loan-progress-bar">
+          <div class="loan-progress-fill" id="loan-progress" style="width:0%"></div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); text-align:right; margin-bottom:10px;">
+          Saldo: <strong id="loan-balance">$1,069.70</strong> restante
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <input class="pay-input" id="loan-paid-input" type="number" placeholder="$ pagado hasta hoy" style="flex:1"/>
+          <button class="btn-add" onclick="updateLoanPaid()">Actualizar</button>
+        </div>
+        <div class="section-title">Hitos obligatorios</div>
+        <div class="milestone-row">
+          <div class="milestone" id="ms1">
+            <div class="milestone-label">6 meses</div>
+            <div class="milestone-val">$320.91</div>
+            <div class="milestone-date">⚠️ 2 Dic 2026</div>
+          </div>
+          <div class="milestone" id="ms2">
+            <div class="milestone-label">12 meses</div>
+            <div class="milestone-val">$641.82</div>
+            <div class="milestone-date">📅 2 Jun 2027</div>
+          </div>
+          <div class="milestone" id="ms3">
+            <div class="milestone-label">18 meses</div>
+            <div class="milestone-val">$1,069.70</div>
+            <div class="milestone-date">📅 2 Dic 2027</div>
+          </div>
+        </div>
+        <div style="margin-top:10px; padding:10px; background:#fef3c7; border-radius:8px; font-size:11px; color:#92400e;">
+          💡 El pago diario se deduce <strong>automáticamente</strong> del saldo de tu tienda HomeMaster. Si las ventas son bajas, Shopify puede hacer un débito ACH para cubrir los hitos.
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-icon">📎</span> Documentos & Archivos</div>
+        <button class="card-action" onclick="document.getElementById('file-input').click()">+ Subir</button>
+      </div>
+      <div class="card-body">
+        <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)"/>
+        <div class="file-drop" id="file-drop"
+          onclick="document.getElementById('file-input').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="event.preventDefault();this.classList.remove('drag');handleFiles(event.dataTransfer.files)">
+          <div class="file-drop-icon">📁</div>
+          <div class="file-drop-text">Arrastra archivos aquí o toca para subir<br><span style="color:var(--blue); font-weight:600;">PDF, imágenes, contratos, reportes…</span></div>
+        </div>
+        <div id="files-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Revenue Chart (full width) -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span class="card-icon">📊</span> Ingresos — Últimas 10 Órdenes</div>
+      <span class="badge badge-green">HomeMaster</span>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CLAUDE CHAT BAR (fixed bottom) -->
+<div class="claude-panel">
+  <div class="claude-bar">
+    <span style="color:rgba(255,255,255,0.7); font-size:12px; white-space:nowrap;">Ask Claude</span>
+    <input class="claude-input" id="claude-input" placeholder="Escríbeme o usa el micrófono..." onkeydown="if(event.key==='Enter')sendToClaudeChat()"/>
+    <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voz">🎤</button>
+    <button class="claude-send" onclick="sendToClaudeChat()" title="Enviar">➤</button>
+  </div>
+</div>
+
+<script>
+// ─── CLOCK ───────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  document.getElementById('clock').innerHTML =
+    `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]}<br>
+     ${now.toLocaleTimeString('es', {hour:'2-digit',minute:'2-digit'})}`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(amount) {
+  return '$' + parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function relDate(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 86400000);
+  if (diff === 0) return 'Hoy';
+  if (diff === 1) return 'Ayer';
+  if (diff < 7) return `Hace ${diff} días`;
+  return d.toLocaleDateString('es', {month:'short', day:'numeric'});
+}
+function senderInitial(sender) {
+  const match = sender.match(/([A-Za-z])/);
+  return match ? match[1].toUpperCase() : '?';
+}
+function avatarColor(sender) {
+  const colors = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#0f3460'];
+  let h = 0;
+  for (let c of sender) h = (h * 31 + c.charCodeAt(0)) % colors.length;
+  return colors[h];
+}
+
+// ─── ORDERS ──────────────────────────────────────────────────────────────────
+let ordersData = [];
+async function loadOrders() {
+  document.getElementById('orders-body').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+  try {
+    const res = await window.cowork.callMcpTool(
+      'mcp__282cba4e-2546-4f70-90a9-81d18fb1c9ab__list-orders',
+      { first: 10 }
+    );
+    const data = typeof res === 'string' ? JSON.parse(res) : res;
+    ordersData = data.orders || [];
+    renderOrders();
+    updateRevenueChart();
+    // Stats
+    const week = ordersData.filter(o => {
+      const d = new Date(o.createdAt);
+      return (new Date() - d) < 7 * 86400000;
+    });
+    const rev = week.reduce((s, o) => s + parseFloat(o.totalPrice), 0);
+    document.getElementById('stat-revenue').textContent = fmt(rev);
+    document.getElementById('stat-orders').textContent = `${week.length} órdenes esta semana`;
+  } catch(e) {
+    document.getElementById('orders-body').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>${e.message}</div>`;
+  }
+}
+
+function renderOrders() {
+  const el = document.getElementById('orders-body');
+  if (!ordersData.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div>No hay órdenes</div>'; return; }
+  el.innerHTML = ordersData.slice(0,6).map(o => {
+    const statusBadge = o.financialStatus === 'PAID'
+      ? '<span class="badge badge-green">Pagado</span>'
+      : o.financialStatus === 'PENDING'
+        ? '<span class="badge badge-yellow">Pendiente</span>'
+        : '<span class="badge badge-red">'+o.financialStatus+'</span>';
+    return `<div class="order-item">
+      <div class="order-num">${o.name}</div>
+      <div class="order-info">
+        <div class="order-name">${o.customerName || 'Cliente'}</div>
+        <div class="order-date">${relDate(o.createdAt)} · ${statusBadge}</div>
+      </div>
+      <div class="order-price">${fmt(o.totalPrice)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── CHART ───────────────────────────────────────────────────────────────────
+let chart;
+function updateRevenueChart() {
+  const orders = [...ordersData].slice(0,10).reverse();
+  const labels = orders.map(o => o.name);
+  const values = orders.map(o => parseFloat(o.totalPrice));
+  const ctx = document.getElementById('revenueChart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'USD',
+        data: values,
+        backgroundColor: '#0f346099',
+        borderColor: '#0f3460',
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { callback: v => '$'+v, font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ─── EMAILS ──────────────────────────────────────────────────────────────────
+async function loadEmails() {
+  document.getElementById('emails-body').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+  try {
+    const res = await window.cowork.callMcpTool(
+      'mcp__e9ac52f4-b0ed-40c9-ab09-ae431d796ddf__search_threads',
+      { query: 'is:unread in:inbox', pageSize: 8 }
+    );
+    const data = typeof res === 'string' ? JSON.parse(res) : res;
+    const threads = data.threads || [];
+    document.getElementById('stat-unread').textContent = threads.length;
+    if (!threads.length) {
+      document.getElementById('emails-body').innerHTML = '<div class="empty"><div class="empty-icon">✉️</div>Sin emails no leídos</div>';
+      return;
+    }
+    document.getElementById('emails-body').innerHTML = threads.map(t => {
+      const msg = t.messages[0];
+      const sender = msg.sender.replace(/<.*>/, '').trim().replace(/"/g,'');
+      const isUnread = (msg.labelIds||[]).includes('UNREAD');
+      const color = avatarColor(msg.sender);
+      return `<div class="email-item">
+        <div class="email-avatar" style="background:${color}">${senderInitial(sender)}</div>
+        <div class="email-content">
+          <div class="email-sender">${sender.substring(0,30)}</div>
+          <div class="email-subject">${msg.subject || '(Sin asunto)'}</div>
+          <div class="email-snippet">${msg.snippet ? msg.snippet.substring(0,60)+'...' : ''}</div>
+        </div>
+        <div class="email-meta">
+          <div class="email-date">${relDate(msg.date)}</div>
+          ${isUnread ? '<div class="unread-dot"></div>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('emails-body').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>${e.message}</div>`;
+  }
+}
+
+// ─── TASKS ───────────────────────────────────────────────────────────────────
+function loadTasks() {
+  return JSON.parse(localStorage.getItem('ss_tasks') || '[]');
+}
+function saveTasks(tasks) {
+  localStorage.setItem('ss_tasks', JSON.stringify(tasks));
+}
+function renderTasks() {
+  const tasks = loadTasks();
+  const pending = tasks.filter(t => !t.done).length;
+  document.getElementById('stat-tasks').textContent = pending;
+  document.getElementById('task-count-badge').textContent = pending;
+  const el = document.getElementById('tasks-list');
+  if (!tasks.length) {
+    el.innerHTML = '<div class="empty" style="padding:16px 0;"><div class="empty-icon">✅</div>Sin tareas pendientes</div>';
+    return;
+  }
+  el.innerHTML = tasks.map((t, i) => {
+    const pClass = t.priority === 'high' ? 'p-high' : t.priority === 'low' ? 'p-low' : 'p-medium';
+    return `<div class="task-item">
+      <div class="priority-dot ${pClass}"></div>
+      <input type="checkbox" class="task-check" ${t.done?'checked':''} onchange="toggleTask(${i})"/>
+      <div class="task-text ${t.done?'done':''}">${t.text}</div>
+      <button class="task-del" onclick="deleteTask(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+function addTask() {
+  const input = document.getElementById('task-input');
+  const prio = document.getElementById('task-priority').value;
+  const text = input.value.trim();
+  if (!text) return;
+  const tasks = loadTasks();
+  tasks.unshift({ text, priority: prio, done: false, created: new Date().toISOString() });
+  saveTasks(tasks); input.value = ''; renderTasks();
+}
+function toggleTask(i) {
+  const tasks = loadTasks();
+  tasks[i].done = !tasks[i].done;
+  saveTasks(tasks); renderTasks();
+}
+function deleteTask(i) {
+  const tasks = loadTasks();
+  tasks.splice(i,1);
+  saveTasks(tasks); renderTasks();
+}
+
+// ─── PAYMENTS ────────────────────────────────────────────────────────────────
+function loadPayments() { return JSON.parse(localStorage.getItem('ss_payments') || '[]'); }
+function savePayments(p) { localStorage.setItem('ss_payments', JSON.stringify(p)); }
+function togglePayForm() {
+  const f = document.getElementById('pay-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+function addPayment() {
+  const name = document.getElementById('pay-name').value.trim();
+  const amount = document.getElementById('pay-amount').value;
+  const date = document.getElementById('pay-date').value;
+  if (!name || !amount || !date) { alert('Completa todos los campos'); return; }
+  const pays = loadPayments();
+  pays.push({ name, amount: parseFloat(amount), date, paid: false });
+  pays.sort((a,b) => new Date(a.date) - new Date(b.date));
+  savePayments(pays);
+  document.getElementById('pay-name').value = '';
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-date').value = '';
+  document.getElementById('pay-form').style.display = 'none';
+  renderPayments();
+}
+function renderPayments() {
+  const pays = loadPayments();
+  const now = new Date();
+  const upcoming7 = pays.filter(p => {
+    const d = new Date(p.date);
+    const diff = (d - now) / 86400000;
+    return !p.paid && diff >= 0 && diff <= 7;
+  });
+  document.getElementById('stat-payments').textContent = upcoming7.length;
+  const el = document.getElementById('payments-list');
+  if (!pays.length) {
+    el.innerHTML = '<div class="empty" style="padding:8px 0;"><div class="empty-icon">💳</div>Sin pagos registrados</div>';
+    return;
+  }
+  el.innerHTML = pays.map((p, i) => {
+    const d = new Date(p.date);
+    const diff = Math.ceil((d - now) / 86400000);
+    let daysEl = '';
+    if (!p.paid) {
+      if (diff < 0) daysEl = `<span class="days-red">Vencido</span>`;
+      else if (diff <= 3) daysEl = `<span class="days-red">En ${diff}d</span>`;
+      else if (diff <= 7) daysEl = `<span class="days-yellow">En ${diff}d</span>`;
+      else daysEl = `<span class="days-green">En ${diff}d</span>`;
+    }
+    return `<div class="payment-item">
+      <div class="pay-info">
+        <div class="pay-name" style="${p.paid?'text-decoration:line-through;color:#9ca3af':''}">${p.name}</div>
+        <div class="pay-date">${d.toLocaleDateString('es', {day:'numeric',month:'short',year:'numeric'})} ${daysEl}</div>
+      </div>
+      <div class="pay-amount">${fmt(p.amount)}</div>
+      <button onclick="togglePay(${i})" style="background:${p.paid?'#d1fae5':'#dbeafe'};border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:600;color:${p.paid?'#065f46':'#1e40af'}">${p.paid?'✓ Pagado':'Marcar'}</button>
+      <button onclick="deletePay(${i})" class="task-del">×</button>
+    </div>`;
+  }).join('');
+}
+function togglePay(i) {
+  const pays = loadPayments();
+  pays[i].paid = !pays[i].paid;
+  savePayments(pays); renderPayments();
+}
+function deletePay(i) {
+  const pays = loadPayments();
+  pays.splice(i,1);
+  savePayments(pays); renderPayments();
+}
+
+// ─── TAX ─────────────────────────────────────────────────────────────────────
+const TAX_ITEMS = [
+  'Recopilar todos los 1099 / W-2',
+  'Registrar ingresos por cliente',
+  'Documentar gastos de software / SaaS',
+  'Gastos de publicidad (Meta, Google)',
+  'Gastos de home office',
+  'Millas y transporte de negocio',
+  'Subcontratistas y freelancers (formulario W-9)',
+  'Enviar a contador / CPA',
+];
+function loadTaxChecklist() { return JSON.parse(localStorage.getItem('ss_tax_check') || '[]'); }
+function saveTaxChecklist(c) { localStorage.setItem('ss_tax_check', JSON.stringify(c)); }
+function renderTax() {
+  const taxData = JSON.parse(localStorage.getItem('ss_tax') || '{}');
+  const checked = loadTaxChecklist();
+  if (taxData.income) document.getElementById('tax-income').textContent = fmt(taxData.income);
+  if (taxData.expenses) document.getElementById('tax-expenses').textContent = fmt(taxData.expenses);
+  const el = document.getElementById('tax-checklist');
+  el.innerHTML = TAX_ITEMS.map((item, i) => {
+    const done = checked.includes(i);
+    return `<div class="tax-check-item">
+      <input type="checkbox" class="task-check" ${done?'checked':''} onchange="toggleTaxItem(${i})" style="width:16px;height:16px;"/>
+      <span style="${done?'text-decoration:line-through;color:#9ca3af':''}">${item}</span>
+    </div>`;
+  }).join('');
+}
+function toggleTaxItem(i) {
+  let checked = loadTaxChecklist();
+  if (checked.includes(i)) checked = checked.filter(x => x !== i);
+  else checked.push(i);
+  saveTaxChecklist(checked); renderTax();
+}
+function saveTax() {
+  const income = document.getElementById('tax-inc-input').value;
+  const expenses = document.getElementById('tax-exp-input').value;
+  localStorage.setItem('ss_tax', JSON.stringify({ income, expenses }));
+  document.getElementById('tax-inc-input').value = '';
+  document.getElementById('tax-exp-input').value = '';
+  renderTax();
+}
+
+// ─── REFRESH SPIN ────────────────────────────────────────────────────────────
+async function loadAll() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  await Promise.all([loadOrders(), loadEmails()]);
+  btn.classList.remove('spinning');
+}
+
+// ─── CLAUDE CHAT ─────────────────────────────────────────────────────────────
+function sendToClaudeChat() {
+  const input = document.getElementById('claude-input');
+  const text = input.value.trim();
+  if (!text) return;
+  sendPrompt(text);
+  input.value = '';
+}
+
+// ─── VOICE ───────────────────────────────────────────────────────────────────
+let recognition;
+let listening = false;
+function toggleVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome en Android/Desktop.');
+    return;
+  }
+  const btn = document.getElementById('voice-btn');
+  if (listening) {
+    recognition && recognition.stop();
+    listening = false;
+    btn.classList.remove('listening');
+    btn.textContent = '🎤';
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'es-MX';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    document.getElementById('claude-input').value = transcript;
+    listening = false;
+    btn.classList.remove('listening');
+    btn.textContent = '🎤';
+    sendToClaudeChat();
+  };
+  recognition.onerror = () => {
+    listening = false;
+    btn.classList.remove('listening');
+    btn.textContent = '🎤';
+  };
+  recognition.onend = () => {
+    if (listening) { listening = false; btn.classList.remove('listening'); btn.textContent = '🎤'; }
+  };
+  recognition.start();
+  listening = true;
+  btn.classList.add('listening');
+  btn.textContent = '🔴';
+}
+
+// ─── SHOPIFY LOAN TRACKER ────────────────────────────────────────────────────
+const LOAN_TOTAL = 1069.70;
+const LOAN_MS = [
+  { label: '6 meses', required: 320.91, date: '2026-12-02', id: 'ms1' },
+  { label: '12 meses', required: 641.82, date: '2027-06-02', id: 'ms2' },
+  { label: '18 meses', required: 1069.70, date: '2027-12-02', id: 'ms3' },
+];
+
+function getLoanPaid() {
+  return parseFloat(localStorage.getItem('ss_loan_paid') || '0');
+}
+
+function updateLoanPaid() {
+  const val = parseFloat(document.getElementById('loan-paid-input').value || '0');
+  if (isNaN(val) || val < 0) return;
+  localStorage.setItem('ss_loan_paid', val.toFixed(2));
+  document.getElementById('loan-paid-input').value = '';
+  renderLoan();
+}
+
+function renderLoan() {
+  const paid = getLoanPaid();
+  const pct = Math.min(100, (paid / LOAN_TOTAL) * 100);
+  const balance = Math.max(0, LOAN_TOTAL - paid);
+  document.getElementById('loan-progress').style.width = pct.toFixed(1) + '%';
+  document.getElementById('loan-paid-pct').textContent = pct.toFixed(1) + '%';
+  document.getElementById('loan-balance').textContent = fmt(balance);
+  const now = new Date();
+  LOAN_MS.forEach(ms => {
+    const el = document.getElementById(ms.id);
+    if (!el) return;
+    const msDate = new Date(ms.date);
+    const daysLeft = Math.ceil((msDate - now) / 86400000);
+    const done = paid >= ms.required;
+    el.className = 'milestone' + (done ? ' done' : (daysLeft <= 60 ? ' urgent' : ''));
+    const icon = done ? '✅' : (daysLeft <= 30 ? '🔴' : daysLeft <= 90 ? '⚠️' : '📅');
+    el.querySelector('.milestone-date').textContent = `${icon} ${msDate.toLocaleDateString('es',{day:'numeric',month:'short',year:'numeric'})}`;
+  });
+}
+
+// ─── FILE UPLOAD ─────────────────────────────────────────────────────────────
+function loadFiles() { return JSON.parse(localStorage.getItem('ss_files') || '[]'); }
+function saveFiles(f) { localStorage.setItem('ss_files', JSON.stringify(f)); }
+
+function fileIcon(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  const map = { pdf: '📄', png: '🖼️', jpg: '🖼️', jpeg: '🖼️', gif: '🖼️',
+    doc: '📝', docx: '📝', xls: '📊', xlsx: '📊', csv: '📊',
+    zip: '🗜️', txt: '📃', mp4: '🎬', mov: '🎬', mp3: '🎵' };
+  return map[ext] || '📎';
+}
+
+function handleFiles(fileList) {
+  const files = loadFiles();
+  Array.from(fileList).forEach(file => {
+    // Store metadata only (no actual file content - localStorage limit)
+    const meta = {
+      id: Date.now() + Math.random(),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      added: new Date().toISOString(),
+      note: ''
+    };
+    files.unshift(meta);
+  });
+  // Keep last 50
+  saveFiles(files.slice(0, 50));
+  renderFiles();
+}
+
+function deleteFile(id) {
+  saveFiles(loadFiles().filter(f => f.id !== id));
+  renderFiles();
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(0) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+function renderFiles() {
+  const files = loadFiles();
+  const el = document.getElementById('files-list');
+  if (!files.length) {
+    el.innerHTML = '<div class="empty" style="padding:8px 0;"><div class="empty-icon">📭</div>Sin archivos guardados</div>';
+    return;
+  }
+  el.innerHTML = files.map(f => `
+    <div class="file-item">
+      <span class="file-icon">${fileIcon(f.name)}</span>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-meta">${fmtSize(f.size)} · ${relDate(f.added)}</div>
+      </div>
+      <button class="file-del" onclick="deleteFile(${f.id})" title="Eliminar">×</button>
+    </div>`).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderTasks();
+renderPayments();
+renderTax();
+renderLoan();
+renderFiles();
+loadAll();
+</script>
+</body>
+</html>
