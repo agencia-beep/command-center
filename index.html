@@ -653,9 +653,30 @@ function avatarColor(sender) {
   return colors[h];
 }
 
+// ─── COWORK DETECTION ────────────────────────────────────────────────────────
+const IS_COWORK = typeof window.cowork !== 'undefined' && typeof window.cowork.callMcpTool === 'function';
+
+function coworkOnlyCard(containerId, icon, title) {
+  document.getElementById(containerId).innerHTML = `
+    <div style="text-align:center;padding:24px 16px;">
+      <div style="font-size:32px;margin-bottom:10px;">${icon}</div>
+      <div style="font-size:13px;font-weight:600;color:#111827;margin-bottom:6px;">${title}</div>
+      <div style="font-size:11px;color:#6b7280;line-height:1.5;">Los datos en vivo solo están disponibles<br>dentro de <strong>Cowork (escritorio)</strong>.<br>Aquí funciona todo lo demás offline.</div>
+      <div style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:6px 12px;font-size:11px;color:#1d4ed8;font-weight:600;">
+        🖥️ Ábrelo en Cowork para ver datos en vivo
+      </div>
+    </div>`;
+}
+
 // ─── ORDERS ──────────────────────────────────────────────────────────────────
 let ordersData = [];
 async function loadOrders() {
+  if (!IS_COWORK) {
+    coworkOnlyCard('orders-body', '🛍️', 'Órdenes de HomeMaster');
+    document.getElementById('stat-revenue').textContent = '—';
+    document.getElementById('stat-orders').textContent = 'Solo en Cowork';
+    return;
+  }
   document.getElementById('orders-body').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
   try {
     const res = await window.cowork.callMcpTool(
@@ -666,7 +687,6 @@ async function loadOrders() {
     ordersData = data.orders || [];
     renderOrders();
     updateRevenueChart();
-    // Stats
     const week = ordersData.filter(o => {
       const d = new Date(o.createdAt);
       return (new Date() - d) < 7 * 86400000;
@@ -702,6 +722,14 @@ function renderOrders() {
 // ─── CHART ───────────────────────────────────────────────────────────────────
 let chart;
 function updateRevenueChart() {
+  if (!IS_COWORK || !ordersData.length) {
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    ctx.font = '13px sans-serif';
+    ctx.fillStyle = '#9ca3af';
+    ctx.textAlign = 'center';
+    ctx.fillText('📊 Gráfica disponible en Cowork con datos reales', ctx.canvas.width / 2, ctx.canvas.height / 2);
+    return;
+  }
   const orders = [...ordersData].slice(0,10).reverse();
   const labels = orders.map(o => o.name);
   const values = orders.map(o => parseFloat(o.totalPrice));
@@ -733,6 +761,11 @@ function updateRevenueChart() {
 
 // ─── EMAILS ──────────────────────────────────────────────────────────────────
 async function loadEmails() {
+  if (!IS_COWORK) {
+    coworkOnlyCard('emails-body', '📧', 'Inbox de Gmail');
+    document.getElementById('stat-unread').textContent = '—';
+    return;
+  }
   document.getElementById('emails-body').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
   try {
     const res = await window.cowork.callMcpTool(
@@ -939,8 +972,14 @@ function sendToClaudeChat() {
   const input = document.getElementById('claude-input');
   const text = input.value.trim();
   if (!text) return;
-  sendPrompt(text);
-  input.value = '';
+  if (typeof sendPrompt === 'function') {
+    sendPrompt(text);
+    input.value = '';
+  } else {
+    // Fuera de Cowork: abrir Claude.ai con el texto
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(text), '_blank');
+    input.value = '';
+  }
 }
 
 // ─── VOICE ───────────────────────────────────────────────────────────────────
